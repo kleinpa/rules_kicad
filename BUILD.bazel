@@ -1,0 +1,5 @@
+alias(
+    name = "pcbnew",
+    actual = "@com_gitlab_kicad_kicad//:pcbnew",
+    visibility = ["//visibility:public"],
+)

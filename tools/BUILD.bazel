@@ -1,0 +1,14 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load("@com_github_kleinpa_kicadbazel_py_deps//:requirements.bzl", "requirement")
+
+py_binary(
+    name = "kicad_to_gerber",
+    srcs = [
+        "kicad_to_gerber.py",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        requirement("absl-py"),
+        "//:pcbnew",
+    ],
+)

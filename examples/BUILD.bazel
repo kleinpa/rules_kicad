@@ -1,0 +1,29 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load("@com_github_kleinpa_kicadbazel//tools:defs.bzl", "gerbers_from_kicad")
+load("@com_github_kleinpa_kicadbazel_py_deps//:requirements.bzl", "requirement")
+
+gerbers_from_kicad(
+    name = "comet_gerbers",
+    src = "comet.kicad_pcb",
+)
+
+py_binary(
+    name = "make_demo_donut",
+    srcs = ["make_demo_donut.py"],
+    deps = [
+        "@com_gitlab_kicad_kicad//:pcbnew",
+        requirement("absl-py"),
+    ],
+)
+
+genrule(
+    name = "demo_donut",
+    outs = ["demo_donut.kicad_pcb"],
+    cmd = "LD_LIBRARY_PATH='$(execpath :make_demo_donut).runfiles/com_gitlab_kicad_kicad' ./$(execpath :make_demo_donut) --output=\"$@\"",
+    exec_tools = [":make_demo_donut"],
+)
+
+gerbers_from_kicad(
+    name = "demo_donut_gerbers",
+    src = "demo_donut",
+)
