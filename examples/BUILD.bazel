@@ -1,8 +1,8 @@
 load("@rules_python//python:defs.bzl", "py_binary")
-load("@com_github_kleinpa_kicadbazel//tools:defs.bzl", "gerbers_from_kicad")
+load("@com_github_kleinpa_kicadbazel//tools:defs.bzl", "kicad_gerbers")
 load("@com_github_kleinpa_kicadbazel_py_deps//:requirements.bzl", "requirement")
 
-gerbers_from_kicad(
+kicad_gerbers(
     name = "comet_gerbers",
     src = "comet.kicad_pcb",
 )
@@ -23,7 +23,7 @@ genrule(
     exec_tools = [":make_demo_donut"],
 )
 
-gerbers_from_kicad(
+kicad_gerbers(
     name = "demo_donut_gerbers",
     src = "demo_donut",
 )

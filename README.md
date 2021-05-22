@@ -39,8 +39,8 @@ A build rule is provided to create a Gerber archive from a
 format accepted by JLCPCB.
 
 ```Starlark
-load("@com_github_kleinpa_kicadbazel//tools:defs.bzl", "gerbers_from_kicad")
-gerbers_from_kicad(
+load("@com_github_kleinpa_kicadbazel//tools:defs.bzl", "kicad_gerbers")
+kicad_gerbers(
     name = "pcb",
     src = "pcb.kicad_pcb",
 )
