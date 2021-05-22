@@ -1,10 +1,35 @@
 load("@rules_python//python:defs.bzl", "py_binary")
-load("@com_github_kleinpa_kicadbazel//tools:defs.bzl", "kicad_gerbers")
+load("@com_github_kleinpa_kicadbazel//tools:defs.bzl", "kicad_bom", "kicad_gerbers")
 load("@com_github_kleinpa_kicadbazel_py_deps//:requirements.bzl", "requirement")
 
 kicad_gerbers(
     name = "comet_gerbers",
     src = "comet.kicad_pcb",
+)
+
+kicad_bom(
+    name = "comet_bom",
+    src = "comet.kicad_pcb",
+    fields = [
+        "Designator",
+        "Package",
+        "Value",
+        "LCSC Part Number",
+    ],
+    component_file = "comet_parts.csv",
+)
+
+kicad_bom(
+    name = "comet_cpl",
+    src = "comet.kicad_pcb",
+    fields = [
+        "Designator",
+        "Mid X",
+        "Mid Y",
+        "Rotation",
+        "Layer",
+    ],
+    component_file = "comet_parts.csv",
 )
 
 py_binary(
@@ -26,4 +51,9 @@ genrule(
 kicad_gerbers(
     name = "demo_donut_gerbers",
     src = "demo_donut",
+)
+
+kicad_bom(
+    name = "demo_donut_bom",
+    src = ":demo_donut",
 )

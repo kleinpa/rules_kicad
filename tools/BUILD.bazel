@@ -10,3 +10,13 @@ py_binary(
         "//:pcbnew",
     ],
 )
+
+py_binary(
+    name = "bom",
+    srcs = ["bom.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:pcbnew",
+        requirement("absl-py"),
+    ],
+)

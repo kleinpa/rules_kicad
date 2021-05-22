@@ -46,6 +46,21 @@ kicad_gerbers(
 )
 ```
 
+BOM generation is a work in progress but limited functionality is
+available via the `kicad_bom()` build rule. This rule accepts an
+optinal CSV file with additional information about each part like
+manufacturer-specififc part numbers. This CSV must have a 'Footprint'
+and 'Value' columns which are used to match parts from the kicad file.
+
+```Starlark
+load("@com_github_kleinpa_kicadbazel//tools:defs.bzl", "kicad_bom")
+kicad_bom(
+    name = "comet_bom",
+    src = "comet.kicad_pcb",
+    component_file = "comet_parts.csv",
+)
+```
+
 One known issue is that one KiCad shared library is not placed in the
 default search path by the Bazel build process. The solution for
 fixing without moving that file is to override `LD_LIBRARY_PATH`. This
