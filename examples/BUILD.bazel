@@ -1,6 +1,6 @@
 load("@rules_python//python:defs.bzl", "py_binary")
-load("@com_github_kleinpa_kicadbazel//tools:defs.bzl", "kicad_bom", "kicad_gerbers")
-load("@com_github_kleinpa_kicadbazel_py_deps//:requirements.bzl", "requirement")
+load("@rules_kicad//tools:defs.bzl", "kicad_bom", "kicad_gerbers")
+load("@pip//:requirements.bzl", "requirement")
 
 kicad_gerbers(
     name = "comet_gerbers",
@@ -10,18 +10,19 @@ kicad_gerbers(
 kicad_bom(
     name = "comet_bom",
     src = "comet.kicad_pcb",
+    component_file = "comet_parts.csv",
     fields = [
         "Designator",
         "Package",
         "Value",
         "LCSC Part Number",
     ],
-    component_file = "comet_parts.csv",
 )
 
 kicad_bom(
     name = "comet_cpl",
     src = "comet.kicad_pcb",
+    component_file = "comet_parts.csv",
     fields = [
         "Designator",
         "Mid X",
@@ -29,31 +30,30 @@ kicad_bom(
         "Rotation",
         "Layer",
     ],
-    component_file = "comet_parts.csv",
 )
 
 py_binary(
     name = "make_demo_donut",
     srcs = ["make_demo_donut.py"],
     deps = [
-        "@com_gitlab_kicad_kicad//:pcbnew",
+        #"@kicad//:pcbnew",
         requirement("absl-py"),
     ],
 )
 
-genrule(
-    name = "demo_donut",
-    outs = ["demo_donut.kicad_pcb"],
-    cmd = "LD_LIBRARY_PATH='$(execpath :make_demo_donut).runfiles/com_gitlab_kicad_kicad' ./$(execpath :make_demo_donut) --output=\"$@\"",
-    exec_tools = [":make_demo_donut"],
-)
+# genrule(
+#     name = "demo_donut",
+#     outs = ["demo_donut.kicad_pcb"],
+#     cmd = "./$(execpath :make_demo_donut) --output=\"$@\"",
+#     exec_tools = [":make_demo_donut"],
+# )
 
-kicad_gerbers(
-    name = "demo_donut_gerbers",
-    src = "demo_donut",
-)
+# kicad_gerbers(
+#     name = "demo_donut_gerbers",
+#     src = "demo_donut",
+# )
 
-kicad_bom(
-    name = "demo_donut_bom",
-    src = ":demo_donut",
-)
+# kicad_bom(
+#     name = "demo_donut_bom",
+#     src = ":demo_donut",
+# )
