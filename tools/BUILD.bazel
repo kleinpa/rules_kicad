@@ -7,7 +7,6 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = [
         requirement("absl-py"),
-        "//:pcbnew",
     ],
 )
 
@@ -16,7 +15,6 @@ py_binary(
     srcs = ["bom.py"],
     visibility = ["//visibility:public"],
     deps = [
-        "//:pcbnew",
         requirement("absl-py"),
     ],
 )

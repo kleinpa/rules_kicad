@@ -6,24 +6,21 @@ bazel_dep(name = "rules_foreign_cc", version = "0.12.0")
 bazel_dep(name = "rules_cc", version = "0.0.12")
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
-python.toolchain(python_version = "3.12", is_default = True)
+python.toolchain(
+    python_version = "3.9",
+)
+use_repo(python, "python_3_9", "python_versions")
 
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
 pip.parse(
     hub_name = "pip",
-    python_version = "3.12",
+    python_version = "3.9",
     requirements_lock = "//:requirements_lock.txt",
     requirements_windows = "//:requirements_windows.txt",
 )
 use_repo(pip, "pip")
 
-http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-http_archive(
-    name = "com_gitlab_kicad_kicad",
-    build_file = "@rules_kicad//external:kicad-BUILD.bazel",
-    patch_args = ["-p1"],
-    patches = ["@rules_kicad//external:kicad.patch"],
-    sha256 = "8e10e556e45aebb73a75f67801bca27241a747ed7bd4e06ab4eff330ae16b6c8",
-    strip_prefix = "kicad-320ca5a0d0df232455718dffe9d62e05d5122ac7",
-    url = "https://gitlab.com/kicad/code/kicad/-/archive/320ca5a0d0df232455718dffe9d62e05d5122ac7/kicad-320ca5a0d0df232455718dffe9d62e05d5122ac7.tar.gz",
-)
+kicad = use_extension("//:kicad.bzl", "kicad")
+use_repo(kicad, "kicad")
+
+register_toolchains("@kicad//:python_toolchain")

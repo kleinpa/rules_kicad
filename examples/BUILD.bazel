@@ -36,7 +36,7 @@ py_binary(
     name = "make_demo_donut",
     srcs = ["make_demo_donut.py"],
     deps = [
-        "@com_gitlab_kicad_kicad//:pcbnew",
+        #"@kicad//:pcbnew",
         requirement("absl-py"),
     ],
 )
@@ -48,12 +48,12 @@ genrule(
     tools = [":make_demo_donut"],
 )
 
-kicad_gerbers(
-    name = "demo_donut_gerbers",
-    src = "demo_donut",
-)
+# kicad_gerbers(
+#     name = "demo_donut_gerbers",
+#     src = "demo_donut",
+# )
 
-kicad_bom(
-    name = "demo_donut_bom",
-    src = ":demo_donut",
-)
+# kicad_bom(
+#     name = "demo_donut_bom",
+#     src = ":demo_donut",
+# )

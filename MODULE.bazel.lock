@@ -85,6 +85,23 @@
   },
   "selectedYankedVersions": {},
   "moduleExtensions": {
+    "//:kicad.bzl%kicad": {
+      "general": {
+        "bzlTransitiveDigest": "mGrsb4twPPReBlnPEysMDpQhNqdQ/7Mn0O7i1mJ9wsI=",
+        "usagesDigest": "fkLQSYhAE4MB58PCQXmYag+JaXYj7aKVnlCcV2LY2v0=",
+        "recordedFileInputs": {},
+        "recordedDirentsInputs": {},
+        "envVariables": {},
+        "generatedRepoSpecs": {
+          "kicad": {
+            "bzlFile": "@@//:kicad.bzl",
+            "ruleClassName": "kicad_repo",
+            "attributes": {}
+          }
+        },
+        "recordedRepoMappingEntries": []
+      }
+    },
     "@@apple_support~//crosstool:setup.bzl%apple_cc_configure_extension": {
       "general": {
         "bzlTransitiveDigest": "PjIds3feoYE8SGbbIq2SFTZy3zmxeO2tQevJZNDo7iY=",

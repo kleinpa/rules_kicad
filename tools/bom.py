@@ -7,6 +7,10 @@ import os
 import shutil
 from typing import OrderedDict, TextIO, List, Dict, Tuple
 
+import sys
+
+print(sys.path)
+
 import pcbnew
 from absl import app, flags
 
@@ -89,7 +93,9 @@ def make_bom(board: pcbnew.BOARD,
                 # This is a hack, but treat Rotation as a special
                 # column and add it's value to the value from KiCAD.
                 for offset_field in ["Rotation"]:
-                    bom_info[offset_field] = str(float(bom_info[offset_field]) + float(component_info[key].pop(offset_field,0)))
+                    bom_info[offset_field] = str(
+                        float(bom_info[offset_field]) +
+                        float(component_info[key].pop(offset_field, 0)))
                 bom_info.update(component_info[key])
             else:
                 logging.warning(f"missing part information for {key}")
@@ -120,7 +126,9 @@ def main(argv):
                 component_info = read_component_file(f)
         with open(FLAGS.output, "w") as f:
             f.write(
-                make_bom(board, field_names=FLAGS.fields, component_info=component_info))
+                make_bom(board,
+                         field_names=FLAGS.fields,
+                         component_info=component_info))
     else:
         raise ValueError("unknown --format value")
 
