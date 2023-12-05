@@ -1,0 +1,14 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "features": {
+    "ghcr.io/devcontainers-community/features/bazel:1": {}
+  },
+  "postCreateCommand": "sudo add-apt-repository --yes ppa:kicad/kicad-10.0-releases && sudo apt-get update && sudo apt-get install -y kicad",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "BazelBuild.vscode-bazel"
+      ]
+    }
+  }
+}

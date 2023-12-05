@@ -1,10 +1,8 @@
-"""Convert a .kicad_pcb file into a gerber archive ready for manufacturing."""
+"""Convert a .kicad_pcb file into a BOM CSV."""
 
 import csv
 import io
 import logging
-import os
-import shutil
 from typing import OrderedDict, TextIO, List, Dict, Tuple
 
 import pcbnew
@@ -12,7 +10,7 @@ from absl import app, flags
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string('input', '', 'Path to .kicad_pcb file')
-flags.DEFINE_string('output', '', 'Path to write .zip file containing gerbers')
+flags.DEFINE_string('output', '', 'Path to write .csv file')
 flags.DEFINE_enum('format', 'csv', ['csv'], "Output format")
 
 # A data file can be provided that contains additional fields for the
@@ -64,8 +62,8 @@ def get_builtin_fields(footprint):
         'Designator': str(footprint.GetReference()),
         'Package': str(footprint.GetFPID().GetLibItemName()),
         'Value': str(footprint.GetValue()),
-        'Mid X': str(footprint.GetPosition().x * pcbnew.MM_PER_IU),
-        'Mid Y': str(-footprint.GetPosition().y * pcbnew.MM_PER_IU),
+        'Mid X': str(pcbnew.ToMM(footprint.GetPosition().x)),
+        'Mid Y': str(-pcbnew.ToMM(footprint.GetPosition().y)),
         'Rotation': str(footprint.GetOrientationDegrees()),
         'Layer': layer_to_name(footprint.GetLayer()),
     }
@@ -83,13 +81,14 @@ def make_bom(board: pcbnew.BOARD,
         bom_info = get_builtin_fields(footprint)
         key = tuple(bom_info[f] for f in key_fields)
 
-        component_file_fields = {}
         if component_info:
             if key in component_info:
                 # This is a hack, but treat Rotation as a special
                 # column and add it's value to the value from KiCAD.
                 for offset_field in ["Rotation"]:
-                    bom_info[offset_field] = str(float(bom_info[offset_field]) + float(component_info[key].pop(offset_field,0)))
+                    bom_info[offset_field] = str(
+                        float(bom_info[offset_field]) +
+                        float(component_info[key].pop(offset_field, 0)))
                 bom_info.update(component_info[key])
             else:
                 logging.warning(f"missing part information for {key}")
@@ -120,7 +119,9 @@ def main(argv):
                 component_info = read_component_file(f)
         with open(FLAGS.output, "w") as f:
             f.write(
-                make_bom(board, field_names=FLAGS.fields, component_info=component_info))
+                make_bom(board,
+                         field_names=FLAGS.fields,
+                         component_info=component_info))
     else:
         raise ValueError("unknown --format value")
 

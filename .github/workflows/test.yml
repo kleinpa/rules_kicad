@@ -1,0 +1,54 @@
+name: test
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Cache KiCad
+        id: cache-kicad
+        uses: actions/cache@v5
+        with:
+          path: |
+            /usr/lib/kicad
+            /usr/share/kicad
+            /usr/lib/python3/dist-packages/pcbnew*
+          key: kicad-linux-10.0.0
+
+      - name: Install KiCad
+        if: steps.cache-kicad.outputs.cache-hit != 'true'
+        run: |
+          sudo add-apt-repository --yes ppa:kicad/kicad-10.0-releases
+          sudo apt-get update
+          sudo apt-get install -y kicad
+
+      - run: bazel test //...
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Cache KiCad
+        id: cache-kicad
+        uses: actions/cache@v5
+        with:
+          path: C:\Program Files\KiCad
+          key: kicad-windows-10.0.0
+
+      - name: Install KiCad
+        if: steps.cache-kicad.outputs.cache-hit != 'true'
+        run: choco install kicad --version=10.0.0 -y
+        shell: cmd
+
+      - name: Build
+        shell: cmd
+        env:
+          KICAD_INSTALL_PATH: C:\Program Files\KiCad\10.0\bin
+        run: bazel test //...

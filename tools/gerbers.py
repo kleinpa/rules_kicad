@@ -1,8 +1,6 @@
 """Convert a .kicad_pcb file into a gerber archive ready for manufacturing."""
 
-import io
 import os
-import shutil
 import tempfile
 import zipfile
 
@@ -21,20 +19,14 @@ def kicad_file_to_gerber_archive_file(input_path, output_path):
 
     popt = pctl.GetPlotOptions()
     popt.SetPlotFrameRef(False)
-    popt.SetAutoScale(False)
-    popt.SetScale(1)
     popt.SetMirror(False)
     popt.SetUseGerberAttributes(False)
-    popt.SetExcludeEdgeLayer(True)
-    popt.SetScale(1)
     popt.SetUseAuxOrigin(True)
     popt.SetNegative(False)
     popt.SetPlotReference(True)
     popt.SetPlotValue(True)
-    popt.SetPlotInvisibleText(False)
     popt.SetSubtractMaskFromSilk(True)
-    popt.SetMirror(False)
-    popt.SetDrillMarksType(pcbnew.PCB_PLOT_PARAMS.NO_DRILL_SHAPE)
+    popt.SetDrillMarksType(pcbnew.DRILL_MARKS_NO_DRILL_SHAPE)
 
     # TODO(kleinpa): Will JLCPCB accept file without this set?
     popt.SetUseGerberProtelExtensions(True)
@@ -50,7 +42,7 @@ def kicad_file_to_gerber_archive_file(input_path, output_path):
                  ("Edge_Cuts", pcbnew.Edge_Cuts, "Edges")]
 
     for layer in range(1, board.GetCopperLayerCount() - 1):
-        plot_plan += (f"inner{layer}", layer, "inner")
+        plot_plan += [(f"inner{layer}", layer, "inner")]
 
     with tempfile.TemporaryDirectory() as temp_path:
         popt.SetOutputDirectory(temp_path)
@@ -67,16 +59,13 @@ def kicad_file_to_gerber_archive_file(input_path, output_path):
         drlwriter.SetMapFileFormat(aMapFmt=pcbnew.PLOT_FORMAT_GERBER)
         drlwriter.SetOptions(aMirror=False,
                              aMinimalHeader=False,
-                             aOffset=pcbnew.wxPoint(0, 0),
+                             aOffset=pcbnew.VECTOR2I(0, 0),
                              aMerge_PTH_NPTH=True)
-        formatMetric = True
-        drlwriter.SetFormat(formatMetric)
+        drlwriter.SetFormat(True)
         drlwriter.CreateDrillandMapFilesSet(aPlotDirectory=temp_path,
                                             aGenDrill=True,
                                             aGenMap=False)
 
-        # Copy files from output directory to in-memory zip file
-        fp = io.BytesIO()
         with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as z:
             for root, dirs, files in os.walk(temp_path):
                 for file in files:
@@ -84,12 +73,10 @@ def kicad_file_to_gerber_archive_file(input_path, output_path):
                         os.path.join(root, file),
                         # TODO(kleinpa): Required for JLCPCB, any alternative?
                         file.replace("gm1", "gko"))
-        fp.seek(0)
-        return fp
 
 
 def main(argv):
-    output = kicad_file_to_gerber_archive_file(FLAGS.input, FLAGS.output)
+    kicad_file_to_gerber_archive_file(FLAGS.input, FLAGS.output)
 
 
 if __name__ == "__main__":

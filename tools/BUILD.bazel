@@ -1,22 +1,22 @@
 load("@rules_python//python:defs.bzl", "py_binary")
-load("@com_github_kleinpa_kicadbazel_py_deps//:requirements.bzl", "requirement")
+load("@pip//:requirements.bzl", "requirement")
 
 py_binary(
     name = "gerbers",
     srcs = ["gerbers.py"],
+    python_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
         requirement("absl-py"),
-        "//:pcbnew",
     ],
 )
 
 py_binary(
     name = "bom",
     srcs = ["bom.py"],
+    python_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
-        "//:pcbnew",
         requirement("absl-py"),
     ],
 )

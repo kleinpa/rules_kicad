@@ -7,7 +7,7 @@ def _kicad_gerbers(ctx):
             "--input={}".format(ctx.file.src.path),
             "--output={}".format(output_file.path),
         ],
-        env = {"LD_LIBRARY_PATH": ctx.executable.gerbers_tool.path + ".runfiles/com_gitlab_kicad_kicad"},
+        env = {"LD_LIBRARY_PATH": ctx.executable.gerbers_tool.path + ".runfiles/kicad"},
         executable = ctx.executable.gerbers_tool,
     )
     return DefaultInfo(
@@ -32,33 +32,23 @@ kicad_gerbers = rule(
 
 def _kicad_bom(ctx):
     bom_output = ctx.actions.declare_file("{}.csv".format(ctx.label.name))
+    args = [
+        "--input={}".format(ctx.file.src.path),
+        "--output={}".format(bom_output.path),
+        "--fields={}".format(",".join(ctx.attr.fields)),
+        "--format=csv",
+    ]
+    inputs = [ctx.file.src]
     if ctx.file.component_file:
-        ctx.actions.run(
-            inputs = [ctx.file.src, ctx.file.component_file],
-            outputs = [bom_output],
-            arguments = [
-                "--input={}".format(ctx.file.src.path),
-                "--output={}".format(bom_output.path),
-                "--component_file={}".format(ctx.file.component_file.path),
-                "--fields={}".format(",".join(ctx.attr.fields)),
-                "--format=csv",
-            ],
-            env = {"LD_LIBRARY_PATH": ctx.executable._bom.path + ".runfiles/com_gitlab_kicad_kicad"},
-            executable = ctx.executable._bom,
-        )
-    else:
-        ctx.actions.run(
-            inputs = [ctx.file.src],
-            outputs = [bom_output],
-            arguments = [
-                "--input={}".format(ctx.file.src.path),
-                "--output={}".format(bom_output.path),
-                "--fields={}".format(",".join(ctx.attr.fields)),
-                "--format=csv",
-            ],
-            env = {"LD_LIBRARY_PATH": ctx.executable._bom.path + ".runfiles/com_gitlab_kicad_kicad"},
-            executable = ctx.executable._bom,
-        )
+        args.append("--component_file={}".format(ctx.file.component_file.path))
+        inputs.append(ctx.file.component_file)
+    ctx.actions.run(
+        inputs = inputs,
+        outputs = [bom_output],
+        arguments = args,
+        env = {"LD_LIBRARY_PATH": ctx.executable._bom.path + ".runfiles/kicad"},
+        executable = ctx.executable._bom,
+    )
     return DefaultInfo(files = depset([bom_output]))
 
 kicad_bom = rule(
