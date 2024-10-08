@@ -1,26 +1,15 @@
-# kicad-bazel
+# rules_kicad
 
 This repository makes it easy to use limited KiCad automation into the
 build process of other Bazel-based projects using it's [python
 scripting
-interface](https://docs.kicad.org/doxygen-python/index.html). The
-version of KiCad is fixed to a development KiCad 6 snapshot to take
-advantage of the recently improved scripting interface.
+interface](https://docs.kicad.org/doxygen-python/index.html).
+
+These rules expect your operating system to have KiCad installed.
 
 ## Usage
 
 In `MODULE.bazel` add:
-
-```
-bazel_dep(name = "mjbots_rules_wix")
-git_override(
-    module_name = "mjbots_rules_wix",
-    remote = "https://github.com/kleinpa/rules_wix",
-    commit = "...",
-)
-```
-
-Then in a `BUILD` file:
 
 ```
 bazel_dep(name = "rules_kicad")
@@ -57,16 +46,3 @@ kicad_bom(
     component_file = "comet_parts.csv",
 )
 ```
-
-## Dependencies
-
-These rules expect to find a KiCad installation and will make that
-installation available to downstream build rules.
-
-TODO: list per-platform dependencies
-
-###
-
-This repo is broken.
-
-Bazel's generated python binary is somehow coupled to the other one from "C:\program files". I imagine answers lie in the "stub script", and creating my own with modificatins maybe a way forward. Something still doesn't add up though.
