@@ -24,13 +24,13 @@ repository available in your project:
 
 ```Starlark
 http_archive(
-    name = "com_github_kleinpa_kicadbazel",
+    name = "rules_kicad",
     sha256 = "<sha>",
     url = "https://github.com/kleinpa/kicad-bazel/archive/<git-hash>.tar.gz",
     strip_prefix = "kicad-bazel-<git-hash>",
 )
 
-load("@com_github_kleinpa_kicadbazel//:deps.bzl", "kicadbazel_deps")
+load("@rules_kicad//:deps.bzl", "kicadbazel_deps")
 kicadbazel_deps()
 ```
 
@@ -39,7 +39,7 @@ A build rule is provided to create a Gerber archive from a
 format accepted by JLCPCB.
 
 ```Starlark
-load("@com_github_kleinpa_kicadbazel//tools:defs.bzl", "kicad_gerbers")
+load("@rules_kicad//tools:defs.bzl", "kicad_gerbers")
 kicad_gerbers(
     name = "pcb",
     src = "pcb.kicad_pcb",
@@ -53,7 +53,7 @@ manufacturer-specififc part numbers. This CSV must have a 'Footprint'
 and 'Value' columns which are used to match parts from the kicad file.
 
 ```Starlark
-load("@com_github_kleinpa_kicadbazel//tools:defs.bzl", "kicad_bom")
+load("@rules_kicad//tools:defs.bzl", "kicad_bom")
 kicad_bom(
     name = "comet_bom",
     src = "comet.kicad_pcb",
