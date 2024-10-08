@@ -7,7 +7,7 @@ def _kicad_gerbers(ctx):
             "--input={}".format(ctx.file.src.path),
             "--output={}".format(output_file.path),
         ],
-        env = {"LD_LIBRARY_PATH": ctx.executable.gerbers_tool.path + ".runfiles/com_gitlab_kicad_kicad"},
+        env = {"LD_LIBRARY_PATH": ctx.executable.gerbers_tool.path + ".runfiles/kicad"},
         executable = ctx.executable.gerbers_tool,
     )
     return DefaultInfo(
@@ -43,7 +43,7 @@ def _kicad_bom(ctx):
                 "--fields={}".format(",".join(ctx.attr.fields)),
                 "--format=csv",
             ],
-            env = {"LD_LIBRARY_PATH": ctx.executable._bom.path + ".runfiles/com_gitlab_kicad_kicad"},
+            env = {"LD_LIBRARY_PATH": ctx.executable._bom.path + ".runfiles/kicad"},
             executable = ctx.executable._bom,
         )
     else:
@@ -56,7 +56,7 @@ def _kicad_bom(ctx):
                 "--fields={}".format(",".join(ctx.attr.fields)),
                 "--format=csv",
             ],
-            env = {"LD_LIBRARY_PATH": ctx.executable._bom.path + ".runfiles/com_gitlab_kicad_kicad"},
+            env = {"LD_LIBRARY_PATH": ctx.executable._bom.path + ".runfiles/kicad"},
             executable = ctx.executable._bom,
         )
     return DefaultInfo(files = depset([bom_output]))

@@ -7,31 +7,28 @@ interface](https://docs.kicad.org/doxygen-python/index.html). The
 version of KiCad is fixed to a development KiCad 6 snapshot to take
 advantage of the recently improved scripting interface.
 
-Under the hood, the KiCad dependency is handled by using
-[`rules_foreign_cc` ](https://github.com/bazelbuild/rules_foreign_cc/)
-to build it from source. Currently all of KiCad gets built even though
-we really just need a couple binaries so it's painfully slow build but
-Bazel's caching makes this bearable.
-
-Only Linux and specifically Ubuntu have been tested so far. Other
-distributions will probably work fine but exact dependencies will need
-to be investigated.
-
 ## Usage
 
-Adding the following to your `WORKSPACE` file will make this
-repository available in your project:
+In `MODULE.bazel` add:
 
-```Starlark
-http_archive(
-    name = "com_github_kleinpa_kicadbazel",
-    sha256 = "<sha>",
-    url = "https://github.com/kleinpa/kicad-bazel/archive/<git-hash>.tar.gz",
-    strip_prefix = "kicad-bazel-<git-hash>",
+```
+bazel_dep(name = "mjbots_rules_wix")
+git_override(
+    module_name = "mjbots_rules_wix",
+    remote = "https://github.com/kleinpa/rules_wix",
+    commit = "...",
 )
+```
 
-load("@com_github_kleinpa_kicadbazel//:deps.bzl", "kicadbazel_deps")
-kicadbazel_deps()
+Then in a `BUILD` file:
+
+```
+bazel_dep(name = "rules_kicad")
+git_override(
+    module_name = "rules_kicad",
+    remote = "https://github.com/kleinpa/rules_kicad",
+    commit = "...",
+)
 ```
 
 A build rule is provided to create a Gerber archive from a
@@ -39,7 +36,7 @@ A build rule is provided to create a Gerber archive from a
 format accepted by JLCPCB.
 
 ```Starlark
-load("@com_github_kleinpa_kicadbazel//tools:defs.bzl", "kicad_gerbers")
+load("@rules_kicad//tools:defs.bzl", "kicad_gerbers")
 kicad_gerbers(
     name = "pcb",
     src = "pcb.kicad_pcb",
@@ -53,7 +50,7 @@ manufacturer-specififc part numbers. This CSV must have a 'Footprint'
 and 'Value' columns which are used to match parts from the kicad file.
 
 ```Starlark
-load("@com_github_kleinpa_kicadbazel//tools:defs.bzl", "kicad_bom")
+load("@rules_kicad//tools:defs.bzl", "kicad_bom")
 kicad_bom(
     name = "comet_bom",
     src = "comet.kicad_pcb",
@@ -61,29 +58,15 @@ kicad_bom(
 )
 ```
 
-One known issue is that one KiCad shared library is not placed in the
-default search path by the Bazel build process. The solution for
-fixing without moving that file is to override `LD_LIBRARY_PATH`. This
-is needed both for [custom rules](tools/defs.bzl) and when using
-genrule():
-
-```Starlark
-genrule(
-    name = "foo",
-    cmd = "LD_LIBRARY_PATH='$(execpath //:bin).runfiles/com_gitlab_kicad_kicad' ./$(location //:bin)",
-    exec_tools = [
-        "@com_gitlab_kleinpa_kicadbazel//:pcbnew",
-    ],
-    ...
-)
-```
-
 ## Dependencies
 
-This library does it's own build of KiCad from source so shares KiCad
-build dependencies. On debian, the packages required to use this
-library are:
+These rules expect to find a KiCad installation and will make that
+installation available to downstream build rules.
 
-```sh
-$ apt install build-essential cmake libboost-dev libboost-filesystem-dev libboost-test-dev libcairo2-dev libcurl4-openssl-dev libgl-dev libglew-dev libglm-dev libgtk-3-dev libpython3-dev libssl-dev libwxgtk3.0-gtk3-dev swig
-```
+TODO: list per-platform dependencies
+
+###
+
+This repo is broken.
+
+Bazel's generated python binary is somehow coupled to the other one from "C:\program files". I imagine answers lie in the "stub script", and creating my own with modificatins maybe a way forward. Something still doesn't add up though.
