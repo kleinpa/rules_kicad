@@ -10,10 +10,11 @@ flags.DEFINE_string('output', '', 'Output path.')
 
 def kicad_circle(x, y, diameter, layer=pcbnew.Edge_Cuts):
     """Create and return a KiCad circle centered at x, y."""
+
     item = pcbnew.PCB_SHAPE()
     item.SetShape(pcbnew.S_CIRCLE)
-    item.SetStart(pcbnew.wxPointMM(x, y))
-    item.SetEnd(pcbnew.wxPointMM(x + diameter / 2, y))
+    item.SetCenter(pcbnew.VECTOR2I(x, y))
+    item.SetRadius(diameter)
     item.SetLayer(layer)
     return item
 

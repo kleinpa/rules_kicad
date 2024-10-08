@@ -6,21 +6,14 @@ bazel_dep(name = "rules_foreign_cc", version = "0.12.0")
 bazel_dep(name = "rules_cc", version = "0.0.12")
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
-python.toolchain(
-    python_version = "3.9",
-)
-use_repo(python, "python_3_9", "python_versions")
-
+python.toolchain(python_version = "3.12")
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
 pip.parse(
     hub_name = "pip",
-    python_version = "3.9",
+    python_version = "3.12",
     requirements_lock = "//:requirements_lock.txt",
-    requirements_windows = "//:requirements_windows.txt",
 )
 use_repo(pip, "pip")
 
-kicad = use_extension("//:kicad.bzl", "kicad")
-use_repo(kicad, "kicad")
-
-register_toolchains("@kicad//:python_toolchain")
+# Use /usr/bin/python for Kicad
+register_toolchains("//:python_toolchain")
