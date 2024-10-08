@@ -9,8 +9,6 @@ from typing import OrderedDict, TextIO, List, Dict, Tuple
 
 import sys
 
-print(sys.path)
-
 import pcbnew
 from absl import app, flags
 
@@ -68,8 +66,8 @@ def get_builtin_fields(footprint):
         'Designator': str(footprint.GetReference()),
         'Package': str(footprint.GetFPID().GetLibItemName()),
         'Value': str(footprint.GetValue()),
-        'Mid X': str(footprint.GetPosition().x * pcbnew.MM_PER_IU),
-        'Mid Y': str(-footprint.GetPosition().y * pcbnew.MM_PER_IU),
+        'Mid X': str(footprint.GetPosition().x / pcbnew.PCB_IU_PER_MM),
+        'Mid Y': str(-footprint.GetPosition().y / pcbnew.PCB_IU_PER_MM),
         'Rotation': str(footprint.GetOrientationDegrees()),
         'Layer': layer_to_name(footprint.GetLayer()),
     }

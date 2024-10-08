@@ -1,21 +1,31 @@
+load("@rules_python//python:defs.bzl", "py_runtime", "py_runtime_pair")
 load("@rules_python//python:pip.bzl", "compile_pip_requirements")
-
-alias(
-    name = "python_toolchain",
-    actual = "@kicad//:python_toolchain",
-    visibility = ["//visibility:public"],
-)
 
 compile_pip_requirements(
     name = "requirements",
     extra_args = ["--allow-unsafe"],
     requirements_in = ":requirements.txt",
     requirements_txt = ":requirements_lock.txt",
-    requirements_windows = "requirements_windows.txt",
 )
 
 exports_files([
     "requirements.txt",
     "requirements_lock.txt",
-    "requirements_windows.txt",
 ])
+
+py_runtime(
+    name = "python3",
+    interpreter_path = "/usr/bin/python",
+)
+
+py_runtime_pair(
+    name = "python_pair",
+    py3_runtime = ":python3",
+)
+
+toolchain(
+    name = "python_toolchain",
+    toolchain = ":python_pair",
+    toolchain_type = "@bazel_tools//tools/python:toolchain_type",
+    visibility = ["//visibility:public"],
+)

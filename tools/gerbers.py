@@ -25,7 +25,6 @@ def kicad_file_to_gerber_archive_file(input_path, output_path):
     popt.SetScale(1)
     popt.SetMirror(False)
     popt.SetUseGerberAttributes(False)
-    popt.SetExcludeEdgeLayer(True)
     popt.SetScale(1)
     popt.SetUseAuxOrigin(True)
     popt.SetNegative(False)
@@ -34,7 +33,7 @@ def kicad_file_to_gerber_archive_file(input_path, output_path):
     popt.SetPlotInvisibleText(False)
     popt.SetSubtractMaskFromSilk(True)
     popt.SetMirror(False)
-    popt.SetDrillMarksType(pcbnew.PCB_PLOT_PARAMS.NO_DRILL_SHAPE)
+    popt.SetDrillMarksType(pcbnew.DRILL_MARKS_NO_DRILL_SHAPE)
 
     # TODO(kleinpa): Will JLCPCB accept file without this set?
     popt.SetUseGerberProtelExtensions(True)
@@ -67,7 +66,7 @@ def kicad_file_to_gerber_archive_file(input_path, output_path):
         drlwriter.SetMapFileFormat(aMapFmt=pcbnew.PLOT_FORMAT_GERBER)
         drlwriter.SetOptions(aMirror=False,
                              aMinimalHeader=False,
-                             aOffset=pcbnew.wxPoint(0, 0),
+                             aOffset=pcbnew.VECTOR2I(0, 0),
                              aMerge_PTH_NPTH=True)
         formatMetric = True
         drlwriter.SetFormat(formatMetric)

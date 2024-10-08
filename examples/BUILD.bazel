@@ -1,3 +1,4 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
 load("@pip//:requirements.bzl", "requirement")
 load("@rules_kicad//tools:defs.bzl", "kicad_bom", "kicad_gerbers")
 load("@rules_python//python:defs.bzl", "py_binary")
@@ -36,7 +37,6 @@ py_binary(
     name = "make_demo_donut",
     srcs = ["make_demo_donut.py"],
     deps = [
-        #"@kicad//:pcbnew",
         requirement("absl-py"),
     ],
 )
@@ -44,16 +44,27 @@ py_binary(
 genrule(
     name = "demo_donut",
     outs = ["demo_donut.kicad_pcb"],
-    cmd = "LD_LIBRARY_PATH='$(execpath :make_demo_donut).runfiles/com_gitlab_kicad_kicad' ./$(execpath :make_demo_donut) --output=\"$@\"",
+    cmd = "$(location :make_demo_donut) --output=\"$@\"",
     tools = [":make_demo_donut"],
 )
 
-# kicad_gerbers(
-#     name = "demo_donut_gerbers",
-#     src = "demo_donut",
-# )
+kicad_gerbers(
+    name = "demo_donut_gerbers",
+    src = "demo_donut",
+)
 
-# kicad_bom(
-#     name = "demo_donut_bom",
-#     src = ":demo_donut",
-# )
+kicad_bom(
+    name = "demo_donut_bom",
+    src = ":demo_donut",
+)
+
+build_test(
+    name = "build_test",
+    targets = [
+        ":comet_gerbers",
+        ":comet_bom",
+        ":comet_cpl",
+        ":demo_donut",
+        ":demo_donut_bom",
+    ],
+)
