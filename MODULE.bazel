@@ -6,11 +6,13 @@ bazel_dep(name = "rules_foreign_cc", version = "0.14.0")
 bazel_dep(name = "rules_cc", version = "0.1.1")
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
-python.toolchain(python_version = "3.12")
+python.toolchain(python_version = "3.10")
+use_repo(python, "python_3_10")
+
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
 pip.parse(
     hub_name = "pip",
-    python_version = "3.12",
+    python_version = "3.10",
     requirements_lock = "//:requirements_lock.txt",
 )
 use_repo(pip, "pip")
